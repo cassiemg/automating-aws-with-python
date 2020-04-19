@@ -1,0 +1,7 @@
+docker run -it --rm myboto3:latest python webotron.py
+docker build -t myboto3 .
+docker run -it ombu/boto3:1.8 python
+docker exec -it <containerid> /bin/bash
+
+docker container prune
+docker cp ~/.aws <containder_id>:/root

@@ -1,0 +1,28 @@
+s3_bucket = s3.create_bucket(Bucket=bucket, CreateBucketConfiguration={'LocationConstraint': session.region_name})
+new_bucket = s3.Bucket('automatingawscassiem-newbucket')
+new_bucket.upload_file('index.html', 'index.html', ExtraArgs={'ContentType':'text/html'})
+
+policy = """
+{
+  "Version":"2012-10-17",
+  "Statement":[{
+	"Sid":"PublicReadGetObject",
+        "Effect":"Allow",
+	  "Principal": "*",
+      "Action":["s3:GetObject"],
+      "Resource":["arn:aws:s3:::%s/*"
+      ]
+    }
+  ]
+}
+""" % s3_bucket.name
+
+policy = policy.strip()
+bucketpolicy = new_bucket.Policy()
+bucketpolicy.put(Policy=policy)
+website = new_bucket.Website()
+website.put(WebsiteConfiguration={'ErrorDocument': {'Key': 'error.html'},'IndexDocument': {'Suffix': 'index.html'}})
+
+
+url = "https://%s.s3-website.us-east-2.amazonaws.com" % new_bucket.name
+
